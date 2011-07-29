@@ -18,12 +18,19 @@
    followed by coll with the item removed."
   [pred coll]
   (let [[head [item & tail]] (split-with (complement pred) coll)]
+    [item (concat head tail)])
+
+  (let [[head [item & tail]] (schwartz (! pred) coll take-while drop-while)]
     [item (concat head tail)]))
+
+(defn schwartz [f coll & receivers])
 
 (defn separate
   "Split coll into two sequences, one that matches pred and one that doesn't. Unlike the
   version in clojure.contrib.seq-utils, pred is only called once per item."
   [pred coll]
+  (schwartz pred coll filter remove)
+
   (let [pcoll (map (decorate pred) coll)]
     (vec (for [f [filter remove]]
            (map first (f second pcoll))))))
